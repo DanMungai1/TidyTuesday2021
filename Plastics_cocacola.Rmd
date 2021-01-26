@@ -1,0 +1,40 @@
+---
+title: "Plastics_Week_4_2020_tidytuesday"
+author: "Dan Mungai"
+date: "26/01/2021"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#Libraries
+```{r}
+library(tidyverse)
+library(readr)
+library(ggthemes)
+```
+
+##Data
+```{r data}
+plastics <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-01-26/plastics.csv')
+```
+
+#cocacola
+```{r}
+cocacola <- plastics %>% 
+  filter(parent_company == "The Coca-Cola Company") %>% 
+  select(c(5:11)) %>% 
+  pivot_longer(cols=1:7, names_to = "plastic", values_to = "numbers") %>% 
+  group_by(plastic) %>% summarise(numbers = sum(numbers, na.rm = T))
+```
+
+```{r}
+ggplot(cocacola, aes(numbers, reorder(plastic, numbers), fill = plastic)) + geom_col() + labs(title = "Cocacola Platic wastes in the World", subtitle = "The plastics are majorly composed of plastic Bottles", x = "Number of Plastic wastes", y = "Plastics category")  + theme_fivethirtyeight() +
+  theme(plot.title = element_text(hjust = .5, size = 20, color = 9), plot.subtitle = element_text(hjust = .5, size = 15, colour = "red"),
+        legend.position = "none")
+```
+
