@@ -1,0 +1,77 @@
+---
+title: "Tidy_Tuesday Week 30"
+author: "Dan Mungai"
+date: "7/20/2021"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Libraries
+```{r include=FALSE}
+library(tidyverse)
+library(rnaturalearth)
+library(rnaturalearthdata)
+library(sf)
+library(mapsf)
+```
+
+# Data
+```{r}
+drought <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-07-20/drought.csv')
+
+drought
+```
+
+# Data Wrangling
+```{r}
+df <- drought %>% 
+  mutate(state_abb = as.factor(state_abb)) %>% 
+  select(state_abb,7:10) %>% 
+  group_by(state_abb) %>% 
+  summarise(area_pct = mean(area_pct, na.rm = T),
+            area_total = mean(area_total, na.rm = T),
+            pop_pct = mean(pop_pct, na.rm = T),
+            pop_total = mean(pop_total, na.rm = T))
+```
+
+```{r}
+us <- ne_states(country = "United States of America", geounit = NULL,
+          iso_a2 = NULL, spdf = NULL,
+  returnclass = "sf") %>% select(postal, geometry) %>% as.data.frame() %>% rename(state_abb = postal)
+us
+```
+
+```{r}
+sh_df <- df %>% left_join(us) %>% 
+  mutate(state_abb = as.factor(state_abb)) %>% 
+  filter(!state_abb == c("AK", "HI")) %>% 
+  st_as_sf()
+```
+
+```{r}
+mf_theme("dark")
+mf_map(x=sh_df)
+
+mf_map(x = sh_df, var = "pop_pct", type = "choro",
+       leg_pos = "bottomleft", 
+       leg_title = "Pop Prop Area",
+       leg_val_cex = 1,
+       leg_title_cex = 1,
+       col = "brown")
+
+mf_label(
+  x = sh_df, 
+  var = "state_abb", 
+  col = "black",
+  cex = 1
+)
+
+mf_layout(title = "Population percentage in Drought Areas")
+
+```
+
