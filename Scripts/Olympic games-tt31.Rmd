@@ -31,7 +31,7 @@ df <- olympics %>% filter(year == 2016,
 ```
 
 ```{r}
-df %>% 
+kenya_ethipia_table <- df %>% 
   gt(rowname_col = "name",
      groupname_col = "team") %>% 
   tab_header(title = "Ethiopian & Kenyan Athletes Who Won Medals in 2016 Olympics") %>% 
@@ -58,9 +58,12 @@ df %>%
     source_notes.font.size = 12,
     table.font.size = 16,
     heading.align = "left"
-  )  %>% gt_theme_538() %>% 
+  )  %>% gt_theme_538()
+
+kenya_ethipia_table %>% 
   gtsave("gtplot.png")
 
-  
+kenya_ethipia_table %>% 
+  gtsave("gtplot.rtf")
 ```
 
