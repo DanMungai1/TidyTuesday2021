@@ -44,8 +44,23 @@ df %>%
   cols_label(sex = "Sex", age = "Age", 
              height = "Height", weight = "Weight", 
              event = "Event", medal = "Medal") %>% 
+  tab_options(
+    column_labels.background.color = "pink",
+    table.border.top.width = px(3),
+    table.border.top.color = "transparent",
+    table.border.bottom.color = "transparent",
+    table.border.bottom.width = px(3),
+    column_labels.border.top.width = px(3),
+    column_labels.border.top.color = "transparent",
+    column_labels.border.bottom.width = px(3),
+    column_labels.border.bottom.color = "black",
+    data_row.padding = px(3),
+    source_notes.font.size = 12,
+    table.font.size = 16,
+    heading.align = "left"
+  )  %>% gt_theme_538() %>% 
   gtsave("gtplot.png")
-  
+
   
 ```
 
