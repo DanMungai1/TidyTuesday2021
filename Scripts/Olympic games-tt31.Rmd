@@ -1,0 +1,51 @@
+---
+title: "The Olymic Games"
+author: "Dan Mungai"
+date: "7/27/2021"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+### Libraries
+```{r libraries ,include=FALSE}
+library(tidyverse)
+library(gt)
+```
+
+## Data
+```{r}
+olympics <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-07-27/olympics.csv')
+olympics
+```
+
+```{r}
+df <- olympics %>% filter(year == 2016, 
+                          medal != is.na(medal),
+                          team %in% c("Kenya", "Ethiopia")) %>% 
+  select(name, sex, age, height, weight, team, event, medal) %>% 
+  mutate_at(.vars = c("event", "medal"), .funs = as.factor)
+```
+
+```{r}
+df %>% 
+  gt(rowname_col = "name",
+     groupname_col = "team") %>% 
+  tab_header(title = "Ethiopian & Kenyan Athletes Who Won Medals in 2016 Olympics") %>% 
+  tab_spanner(columns = c(sex, age, height, weight),
+              label = "Demographics") %>% 
+  tab_footnote(footnote = "Youngest in the country",
+               locations = cells_body(columns = age, 
+                                      rows = c(8,11))) %>% 
+  tab_source_note(source_note = "Tidytuesday week 31-Olympic Games Dataset") %>% 
+  cols_label(sex = "Sex", age = "Age", 
+             height = "Height", weight = "Weight", 
+             event = "Event", medal = "Medal") %>% 
+  gtsave("gtplot.png")
+  
+  
+```
+
