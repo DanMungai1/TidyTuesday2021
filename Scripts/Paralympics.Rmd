@@ -1,0 +1,90 @@
+---
+title: "Paralympics HighCharter"
+author: "Dan Mungai"
+date: "8/7/2021"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Loading the Libraries
+```{r include=FALSE}
+library(tidyverse)
+library(highcharter)
+```
+
+## Loading the data
+```{r include=FALSE}
+athletes <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-08-03/athletes.csv')
+
+```
+
+## Highcharter columns
+```{r}
+athletes %>% select(medal) %>% pull(medal) %>% 
+  hchart()
+
+athletes %>% select(year) %>% pull(year) %>% 
+  hchart()
+```
+
+## Highchart histogram
+```{r}
+athletes %>% group_by(year, type) %>% count() %>% pull(n) %>% 
+  hchart()
+```
+
+```{r}
+athletes %>% group_by(year, type) %>% count() %>% 
+  hchart("spline", hcaes(x = year, y = n, group = type))
+```
+
+```{r}
+athletes %>% group_by(year, type) %>% count() %>% 
+  hchart("line", hcaes(x = year, y = n, group = type))
+```
+
+```{r}
+athletes %>% group_by(year, type) %>% count() %>% 
+  hchart("bar", hcaes(x = year, y = n, group = type))
+```
+
+```{r}
+athletes %>% group_by(year, type) %>% count() %>% 
+  hchart("point", hcaes(x = year, y = n, group = type))
+```
+
+```{r}
+dt <- athletes %>% group_by(year, type) %>%
+  count(sort = T) %>% 
+  slice(1:10)
+
+hchart(dt, "column", hcaes(x = type, y = n, group = year), 
+         name = "column", showInLegend = F) %>% 
+  hc_add_series(dt, "spline", 
+                hcaes(x = type, y = n, group = year), 
+                name = "Spline", showInLegend = F) %>% 
+  hc_exporting(enabled = TRUE, 
+               filename = "Series_Charts") %>%
+  hc_xAxis(title = list(text = "Event Type")) %>%
+  hc_yAxis(title = list(text = "# counts")) %>% 
+  hc_title(text = "Paralympics Chart") %>% 
+  hc_add_theme(hc_theme_darkunica())
+```
+
+
+```{r}
+dt %>% hchart(type = "column", 
+              hcaes(x = year, y = n, group = type)) %>% 
+    hc_exporting(enabled = TRUE, 
+               filename = "Series_Charts") %>%
+  hc_xAxis(title = list(text = "year")) %>%
+  hc_yAxis(title = list(text = "# counts")) %>% 
+  hc_title(text = "Paralympics Chart") %>% 
+  hc_add_theme(hc_theme_chalk())
+```
+
